@@ -11,5 +11,5 @@ LDFLAGS=$(MAPNIK_LIBS) $(MAPNIK_DEP_LIBS) -lpthread -lboost_program_options
 SRCS=$(wildcard src/*.cpp)
 OBJS=$(SRCS:.cpp=.o)
 
-mapnik-render:$(OBJS)
+mapnik-print:$(OBJS)
 	$(CXX) $(LDFLAGS) $^ -o $@

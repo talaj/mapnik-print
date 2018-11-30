@@ -1,27 +1,5 @@
-/*****************************************************************************
- *
- * This file is part of Mapnik (c++ mapping toolkit)
- *
- * Copyright (C) 2015 Artem Pavlenko
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *
- *****************************************************************************/
-
-#include "runner.hpp"
-#include "config.hpp"
+//#include "runner.hpp"
+//#include "config.hpp"
 
 #include <mapnik/datasource_cache.hpp>
 #include <mapnik/font_engine_freetype.hpp>
@@ -40,63 +18,7 @@ log_levels_map log_levels
 };
 #endif
 
-using namespace mapnik_render;
 namespace po = boost::program_options;
-
-runner::renderer_container create_renderers(po::variables_map const & args,
-                                            boost::filesystem::path const & output_dir,
-                                            bool force_append = false)
-{
-    runner::renderer_container renderers;
-
-    if (force_append || args.count(agg_renderer::name))
-    {
-        renderers.emplace_back(renderer<agg_renderer>(output_dir));
-    }
-#if defined(HAVE_CAIRO)
-    if (force_append || args.count(cairo_renderer::name))
-    {
-        renderers.emplace_back(renderer<cairo_renderer>(output_dir));
-    }
-#ifdef CAIRO_HAS_SVG_SURFACE
-    if (args.count(cairo_svg_renderer::name))
-    {
-        renderers.emplace_back(renderer<cairo_svg_renderer>(output_dir));
-    }
-#endif
-#ifdef CAIRO_HAS_PS_SURFACE
-    if (args.count(cairo_ps_renderer::name))
-    {
-        renderers.emplace_back(renderer<cairo_ps_renderer>(output_dir));
-    }
-#endif
-#ifdef CAIRO_HAS_PDF_SURFACE
-    if (args.count(cairo_pdf_renderer::name))
-    {
-        renderers.emplace_back(renderer<cairo_pdf_renderer>(output_dir));
-    }
-#endif
-#endif
-#if defined(SVG_RENDERER)
-    if (force_append || args.count(svg_renderer::name))
-    {
-        renderers.emplace_back(renderer<svg_renderer>(output_dir));
-    }
-#endif
-#if defined(GRID_RENDERER)
-    if (force_append || args.count(grid_renderer::name))
-    {
-        renderers.emplace_back(renderer<grid_renderer>(output_dir));
-    }
-#endif
-
-    if (renderers.empty())
-    {
-        return create_renderers(args, output_dir, true);
-    }
-
-    return renderers;
-}
 
 int main(int argc, char** argv)
 {
@@ -180,6 +102,7 @@ int main(int argc, char** argv)
         defaults.envelopes.push_back(box);
     }
 
+    /*
     if (vm.count("size"))
     {
         const map_sizes_grammar<std::string::const_iterator> map_sizes_parser;
@@ -216,4 +139,5 @@ int main(int argc, char** argv)
     unsigned failed_count = mapnik::util::apply_visitor(summary_visitor(results), report);
 
     return failed_count;
+    */
 }
