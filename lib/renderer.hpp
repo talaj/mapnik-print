@@ -173,11 +173,17 @@ struct map_size
     }
 };
 
+double scale_merc(unsigned zoom)
+{
+    return (mapnik::EARTH_CIRCUMFERENCE / (1u << zoom)) / 256.0;
+}
+
 struct command
 {
     map_size size;
     mapnik::box2d<double> extent;
     double scale_factor;
+    double dpi;
 
     using point_type = mapnik::geometry::point<double>;
 
@@ -190,11 +196,17 @@ struct command
         unsigned zoom,
         double dpi)
         : extent(0, 0, size.width, size.height),
-          size(size.meters_to_inches() * points_per_inch)
+          size(size.meters_to_inches() * points_per_inch),
+          dpi(dpi)
     {
-        double projection_scale_factor = std::cos(math.radians(lat));
+        double projection_scale_factor = std::cos(lat * mapnik::D2R);
         extent *= scale_denom * projection_scale_factor;
         extent.center(map_center.x, map_center.y);
+
+        double scale = scale_merc(zoom);
+        double mapnik_scale_denom = mapnik::scale_denominator(scale, false);
+        scale_factor = mapnik_scale_denom / (mapnik::scale_denominator(
+            extent.width() / size.width, false));
     }
 };
 
