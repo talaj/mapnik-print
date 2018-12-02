@@ -153,9 +153,24 @@ struct cairo_pdf_renderer : cairo_vector_renderer<cairo_pdf_surface_create_for_s
 };
 #endif
 
+double meters_to_inches(double meters)
+{
+    return meters / 0.0254;
+}
+
 struct map_size
 {
     double width, height;
+
+    map_size meters_to_inches() const
+    {
+        return { meters_to_inches(width), meters_to_inches(height) };
+    }
+
+    map_size operator *(double factor) const
+    {
+        return { width * factor, height * factor };
+    }
 };
 
 struct command
@@ -166,12 +181,16 @@ struct command
 
     using point_type = mapnik::geometry::point<double>;
 
+    static constexpr double points_per_inch = 72.0;
+
     command(
         point_type const & map_center,
         double scale_denom,
-        map_size const & size)
+        map_size const & size,
+        unsigned zoom,
+        double dpi)
         : extent(0, 0, size.width, size.height),
-          size(...)
+          size(size.meters_to_inches() * points_per_inch)
     {
         double projection_scale_factor = std::cos(math.radians(lat));
         extent *= scale_denom * projection_scale_factor;
