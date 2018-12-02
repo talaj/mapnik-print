@@ -168,46 +168,7 @@ public:
         return ren.render(map, scale_factor);
     }
 
-    result report(image_type const & image,
-                  std::string const & name,
-                  map_size const & size,
-                  map_size const & tiles,
-                  double scale_factor) const
-    {
-        result res;
-
-        res.state = STATE_OK;
-        res.name = name;
-        res.renderer_name = Renderer::name;
-        res.scale_factor = scale_factor;
-        res.size = size;
-        res.tiles = tiles;
-
-        boost::filesystem::create_directories(output_dir);
-        boost::filesystem::path path = output_dir / image_file_name(name, size, tiles, scale_factor);
-        res.image_path = path;
-        ren.save(image, path);
-
-        return res;
-    }
-
 private:
-    std::string image_file_name(std::string const & test_name,
-                                map_size const & size,
-                                map_size const & tiles,
-                                double scale_factor) const
-    {
-        std::stringstream s;
-        s << test_name << '-' << (size.width / scale_factor) << '-' << (size.height / scale_factor) << '-';
-        if (tiles.width > 1 || tiles.height > 1)
-        {
-            s << tiles.width << 'x' << tiles.height << '-';
-        }
-        s << std::fixed << std::setprecision(1) << scale_factor << '-' << Renderer::name;
-        s << Renderer::ext;
-        return s.str();
-    }
-
     const Renderer ren;
     const boost::filesystem::path output_dir;
 };

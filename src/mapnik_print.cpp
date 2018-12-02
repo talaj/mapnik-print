@@ -1,4 +1,4 @@
-//#include "runner.hpp"
+#include "../lib/renderer.hpp"
 //#include "config.hpp"
 
 #include <mapnik/datasource_cache.hpp>
@@ -22,6 +22,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
+    /*
     po::options_description desc("mapnik-render");
     desc.add_options()
         ("help,h", "produce usage message")
@@ -101,6 +102,7 @@ int main(int argc, char** argv)
         box.from_string(vm["envelope"].as<std::string>());
         defaults.envelopes.push_back(box);
     }
+    */
 
     /*
     if (vm.count("size"))
