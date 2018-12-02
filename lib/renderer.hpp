@@ -104,6 +104,8 @@ using surface_create_type = cairo_surface_t *(&)(cairo_write_func_t, void *, dou
 template <surface_create_type SurfaceCreateFunction>
 struct cairo_vector_renderer : vector_renderer_base
 {
+    static constexpr double cairo_resolution = 72.0;
+
     static cairo_status_t write(void *closure,
                                 const unsigned char *data,
                                 unsigned int length)
@@ -151,27 +153,54 @@ struct cairo_pdf_renderer : cairo_vector_renderer<cairo_pdf_surface_create_for_s
 };
 #endif
 
+struct map_size
+{
+    double width, height;
+};
+
+struct command
+{
+    map_size size;
+    mapnik::box2d<double> extent;
+    double scale_factor;
+
+    using point_type = mapnik::geometry::point<double>;
+
+    command(
+        point_type const & map_center,
+        double scale_denom,
+        map_size const & size)
+        : extent(0, 0, size.width, size.height),
+          size(...)
+    {
+        double projection_scale_factor = std::cos(math.radians(lat));
+        extent *= scale_denom * projection_scale_factor;
+        extent.center(map_center.x, map_center.y);
+    }
+};
+
 template <typename Renderer>
 class renderer
 {
+    const Renderer ren;
+    const boost::filesystem::path output_dir;
+    mapnik::map map;
+
 public:
     using renderer_type = Renderer;
     using image_type = typename Renderer::image_type;
 
-    renderer(boost::filesystem::path const & _output_dir)
-        : ren(), output_dir(_output_dir)
+    renderer(mapnik::map const & map)
+        : map(map)
     {
     }
 
-    image_type render(mapnik::Map const & map, double scale_factor) const
+    image_type render(command const & cmd)
     {
-        return ren.render(map, scale_factor);
+        return ren.render(map, cmd.scale_factor);
     }
-
-private:
-    const Renderer ren;
-    const boost::filesystem::path output_dir;
 };
+
 
 using renderer_type = mapnik::util::variant<renderer<agg_renderer>
 #if defined(HAVE_CAIRO)
