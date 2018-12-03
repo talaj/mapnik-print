@@ -164,7 +164,8 @@ struct map_size
 
     map_size meters_to_inches() const
     {
-        return { meters_to_inches(width), meters_to_inches(height) };
+        return { mapnik_print::meters_to_inches(width),
+                 mapnik_print::meters_to_inches(height) };
     }
 
     map_size operator *(double factor) const
@@ -199,9 +200,9 @@ struct command
           size(size.meters_to_inches() * points_per_inch),
           dpi(dpi)
     {
-        double projection_scale_factor = std::cos(lat * mapnik::D2R);
+        double projection_scale_factor = std::cos(/* TODO: inverse project */ map_center.y * mapnik::D2R);
         extent *= scale_denom * projection_scale_factor;
-        extent.center(map_center.x, map_center.y);
+        extent.re_center(map_center.x, map_center.y);
 
         double scale = scale_merc(zoom);
         double mapnik_scale_denom = mapnik::scale_denominator(scale, false);

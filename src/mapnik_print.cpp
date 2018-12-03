@@ -22,6 +22,7 @@ namespace po = boost::program_options;
 
 int main(int argc, char** argv)
 {
+    mapnik_print::renderer<mapnik_print::cairo_pdf_renderer> renderer;
     /*
     po::options_description desc("mapnik-render");
     desc.add_options()
