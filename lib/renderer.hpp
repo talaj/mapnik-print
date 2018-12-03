@@ -14,6 +14,8 @@
 #include <mapnik/grid/grid_renderer.hpp>
 #endif
 
+#include <mapnik/projection.hpp>
+
 #if defined(HAVE_CAIRO)
 #include <mapnik/cairo/cairo_renderer.hpp>
 #include <mapnik/cairo/cairo_image_util.hpp>
@@ -200,7 +202,11 @@ struct command
           size(size.meters_to_inches() * points_per_inch),
           dpi(dpi)
     {
-        double projection_scale_factor = std::cos(/* TODO: inverse project */ map_center.y * mapnik::D2R);
+        mapnik::projection proj(srs);
+        point_type geografic_center,;
+        proj.inverse(geografic_center.x, geografic_center.y);
+
+        double projection_scale_factor = std::cos(geografic_center.y * mapnik::D2R);
         extent *= scale_denom * projection_scale_factor;
         extent.re_center(map_center.x, map_center.y);
 
