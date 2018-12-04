@@ -15,6 +15,7 @@
 #endif
 
 #include <mapnik/projection.hpp>
+#include <mapnik/scale_denominator.hpp>
 
 #if defined(HAVE_CAIRO)
 #include <mapnik/cairo/cairo_renderer.hpp>
@@ -193,9 +194,10 @@ struct command
     static constexpr double points_per_inch = 72.0;
 
     command(
+        std::string const & srs,
         point_type const & map_center,
-        double scale_denom,
         map_size const & size,
+        double scale_denom,
         unsigned zoom,
         double dpi)
         : extent(0, 0, size.width, size.height),
@@ -203,7 +205,7 @@ struct command
           dpi(dpi)
     {
         mapnik::projection proj(srs);
-        point_type geografic_center,;
+        point_type geografic_center;
         proj.inverse(geografic_center.x, geografic_center.y);
 
         double projection_scale_factor = std::cos(geografic_center.y * mapnik::D2R);
@@ -222,13 +224,13 @@ class renderer
 {
     const Renderer ren;
     const boost::filesystem::path output_dir;
-    mapnik::map map;
+    mapnik::Map map;
 
 public:
     using renderer_type = Renderer;
     using image_type = typename Renderer::image_type;
 
-    renderer(mapnik::map const & map)
+    renderer(mapnik::Map const & map)
         : map(map)
     {
     }
